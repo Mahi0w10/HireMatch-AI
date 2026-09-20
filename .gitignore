@@ -1,0 +1,13 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+.env
+
+resumes/*
+!resumes/.gitkeep
+
+*.db
+*.sqlite
+*.sqlite3
