@@ -1,0 +1,497 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HireMatch AI - Intelligent Resume Screening</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --navy: #0f172a;
+      --slate: #475569;
+      --light: #f8fafc;
+      --border: #cbd5e1;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f1f5f9;
+      color: var(--navy);
+      min-height: 100vh;
+    }
+    .navbar {
+      background: #ffffff;
+      border-bottom: 2px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo { display: flex; align-items: center; gap: 0.6rem; }
+    .logo h1 { font-size: 1.3rem; font-weight: 700; color: var(--navy); }
+    .logo .accent { color: var(--primary); }
+    .logo-badge {
+      background: var(--primary);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .nav-tabs { display: flex; gap: 0.5rem; }
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--slate);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { background: #eef2ff; color: var(--primary); }
+    .tab-btn.active {
+      background: #eef2ff;
+      border-color: #c7d2fe;
+      color: var(--primary);
+    }
+    .main-content {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .tab-content { display: none !important; }
+    .tab-content.active { display: block !important; }
+    .page-header { margin-bottom: 1.5rem; }
+    .page-header h2 { font-size: 1.5rem; color: var(--navy); margin-bottom: 0.3rem; }
+    .page-header p { color: var(--slate); font-size: 0.95rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    .mt-4 { margin-top: 1.5rem; }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+      color: var(--slate);
+    }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: white; width: 100%; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-secondary { background: #e2e8f0; color: var(--slate); cursor: not-allowed; }
+    .score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; margin-bottom: 1.5rem; }
+    .score-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 1.2rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .score-num { font-size: 2.2rem; font-weight: 700; color: var(--primary); display: block; }
+    .score-label { font-size: 0.85rem; color: var(--slate); font-weight: 600; }
+    .skills-block { margin-top: 1.2rem; }
+    .skills-block h4 { font-size: 0.85rem; color: var(--slate); margin-bottom: 0.5rem; }
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    .tag-matched { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .tag-missing { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .suggestion-list { list-style: none; font-size: 0.85rem; color: var(--slate); }
+    .suggestion-list li { margin-bottom: 0.4rem; padding-left: 1rem; position: relative; }
+    .suggestion-list li::before { content: "•"; color: var(--primary); font-weight: bold; position: absolute; left: 0; }
+    .table-responsive { overflow-x: auto; margin-top: 1rem; }
+    .table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+    .table th, .table td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); }
+    .table th { background: #f8fafc; font-weight: 600; color: var(--slate); }
+    .rank-badge {
+      background: var(--navy);
+      color: white;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <span class="logo-badge">AI</span>
+        <h1>HireMatch <span class="accent">AI</span></h1>
+      </div>
+      <nav class="nav-tabs">
+        <button id="btn-tab-seeker" class="tab-btn active" onclick="switchTab('seeker')">Job Seeker</button>
+        <button id="btn-tab-recruiter" class="tab-btn" onclick="switchTab('recruiter')">Recruiter Dashboard</button>
+        <button id="btn-tab-shortlist" class="tab-btn" onclick="switchTab('shortlist')">Shortlisted Candidates</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- TAB 1: JOB SEEKER -->
+    <section id="seeker-tab" class="tab-content active">
+      <div class="page-header">
+        <h2>Resume Alignment & Skill Gap Analysis</h2>
+        <p>Upload your resume PDF and target job description to evaluate matching score and missing skills.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <form id="single-form" onsubmit="handleSingleAnalyze(event)">
+            <div class="form-group">
+              <label for="single-resume">Upload Resume (PDF only)</label>
+              <input type="file" id="single-resume" accept=".pdf" required>
+            </div>
+            <div class="form-group">
+              <label for="single-jd">Target Job Description</label>
+              <textarea id="single-jd" rows="8" placeholder="Paste the job requirements, responsibilities, and required skills here..." required></textarea>
+            </div>
+            <button type="submit" id="single-btn" class="btn btn-primary">
+              <span class="btn-text">Analyze Resume</span>
+            </button>
+          </form>
+        </div>
+
+        <div class="card result-card" id="single-result-box" style="display: none;">
+          <h3>Analysis Overview</h3>
+          <div class="score-grid">
+            <div class="score-card">
+              <span class="score-num" id="res-skill-score">--</span>
+              <span class="score-label">Skill Match Score</span>
+            </div>
+            <div class="score-card">
+              <span class="score-num" id="res-semantic-score">--</span>
+              <span class="score-label">Semantic Similarity</span>
+            </div>
+          </div>
+          <div class="skills-block">
+            <h4>Matched Skills</h4>
+            <div id="res-matched-skills" class="tag-cloud"></div>
+          </div>
+          <div class="skills-block">
+            <h4>Missing Skills</h4>
+            <div id="res-missing-skills" class="tag-cloud"></div>
+          </div>
+          <div class="skills-block">
+            <h4>Actionable Suggestions</h4>
+            <ul id="res-suggestions" class="suggestion-list"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: RECRUITER BATCH SCREENING -->
+    <section id="recruiter-tab" class="tab-content">
+      <div class="page-header">
+        <h2>Recruiter Screening & Candidate Ranking</h2>
+        <p>Upload up to 20 candidate resumes at once to automatically rank and screen applicants.</p>
+      </div>
+
+      <div class="card">
+        <form id="batch-form" onsubmit="handleBatchAnalyze(event)">
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="batch-resumes">Choose Multiple Resumes (Max 20 PDFs)</label>
+              <input type="file" id="batch-resumes" accept=".pdf" multiple required>
+            </div>
+            <div class="form-group">
+              <label for="batch-jd">Job Description Requirements</label>
+              <textarea id="batch-jd" rows="4" placeholder="Paste target JD requirements here..." required></textarea>
+            </div>
+          </div>
+          <button type="submit" id="batch-btn" class="btn btn-primary">
+            <span class="btn-text">Screen & Rank Candidates</span>
+          </button>
+        </form>
+      </div>
+
+      <div id="batch-result-container" class="card mt-4" style="display: none;">
+        <h3>Candidate Leaderboard</h3>
+        <div class="table-responsive">
+          <table class="table" id="ranked-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Candidate Resume</th>
+                <th>Skill Match</th>
+                <th>Semantic Match</th>
+                <th>Matched Skills</th>
+                <th>Missing Skills</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="ranked-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: SHORTLISTED CANDIDATES -->
+    <section id="shortlist-tab" class="tab-content">
+      <div class="page-header">
+        <h2>Shortlisted Candidates (SQLite Persistence)</h2>
+        <p>Candidates saved in the persistent SQLite database for interview scheduling.</p>
+      </div>
+
+      <div class="card">
+        <div class="table-responsive">
+          <table class="table" id="shortlist-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Candidate Resume</th>
+                <th>Job Description</th>
+                <th>Score</th>
+                <th>Status</th>
+                <th>Notes</th>
+                <th>Shortlisted At</th>
+              </tr>
+            </thead>
+            <tbody id="shortlist-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_BASE = "";
+
+    function switchTab(tab) {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+
+      if (tab === "seeker") {
+        document.getElementById("btn-tab-seeker").classList.add("active");
+        document.getElementById("seeker-tab").classList.add("active");
+      } else if (tab === "recruiter") {
+        document.getElementById("btn-tab-recruiter").classList.add("active");
+        document.getElementById("recruiter-tab").classList.add("active");
+      } else if (tab === "shortlist") {
+        document.getElementById("btn-tab-shortlist").classList.add("active");
+        document.getElementById("shortlist-tab").classList.add("active");
+        loadShortlisted();
+      }
+    }
+
+    // 1. Single Resume Analysis
+    async function handleSingleAnalyze(e) {
+      e.preventDefault();
+      const fileInput = document.getElementById("single-resume");
+      const jdInput = document.getElementById("single-jd");
+      const btn = document.getElementById("single-btn");
+
+      if (!fileInput.files.length) return alert("Please select a PDF resume!");
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      formData.append("job_description", jdInput.value);
+
+      btn.disabled = true;
+      btn.querySelector(".btn-text").textContent = "Analyzing Resume...";
+
+      try {
+        const res = await fetch(`${API_BASE}/analyze-resume`, {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Analysis failed");
+
+        const a = data.analysis;
+        document.getElementById("res-skill-score").textContent = a.skill_match_score !== null ? `${a.skill_match_score}%` : "N/A";
+        document.getElementById("res-semantic-score").textContent = `${a.semantic_similarity_score}/100`;
+
+        // Render tags
+        const matchedBox = document.getElementById("res-matched-skills");
+        matchedBox.innerHTML = a.matched_skills.length 
+          ? a.matched_skills.map(s => `<span class="tag tag-matched">${s}</span>`).join("")
+          : "<em>No required skills matched</em>";
+
+        const missingBox = document.getElementById("res-missing-skills");
+        missingBox.innerHTML = a.missing_skills.length
+          ? a.missing_skills.map(s => `<span class="tag tag-missing">${s}</span>`).join("")
+          : "<em>None! Perfect match.</em>";
+
+        const suggList = document.getElementById("res-suggestions");
+        suggList.innerHTML = a.suggestions.map(s => `<li>${s}</li>`).join("");
+
+        document.getElementById("single-result-box").style.display = "block";
+      } catch (err) {
+        alert("Error: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.querySelector(".btn-text").textContent = "Analyze Resume";
+      }
+    }
+
+    // 2. Batch Resume Screening
+    let currentBatchJD = "";
+    async function handleBatchAnalyze(e) {
+      e.preventDefault();
+      const filesInput = document.getElementById("batch-resumes");
+      const jdInput = document.getElementById("batch-jd");
+      const btn = document.getElementById("batch-btn");
+
+      if (!filesInput.files.length) return alert("Select at least 1 PDF resume!");
+      currentBatchJD = jdInput.value;
+
+      const formData = new FormData();
+      for (let file of filesInput.files) {
+        formData.append("files", file);
+      }
+      formData.append("job_description", currentBatchJD);
+
+      btn.disabled = true;
+      btn.querySelector(".btn-text").textContent = "Ranking Candidates...";
+
+      try {
+        const res = await fetch(`${API_BASE}/analyze-multiple-resumes`, {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Batch analysis failed");
+
+        const tbody = document.getElementById("ranked-tbody");
+        tbody.innerHTML = "";
+
+        data.results.forEach(cand => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td><span class="rank-badge">${cand.rank || "-"}</span></td>
+            <td><strong>${cand.filename}</strong></td>
+            <td>${cand.skill_match_score !== null ? cand.skill_match_score + "%" : "N/A"}</td>
+            <td>${cand.semantic_similarity_score !== null ? cand.semantic_similarity_score + "/100" : "N/A"}</td>
+            <td>${cand.matched_skills.map(s => `<span class="tag tag-matched">${s}</span>`).join(" ")}</td>
+            <td>${cand.missing_skills.map(s => `<span class="tag tag-missing">${s}</span>`).join(" ")}</td>
+            <td>
+              ${cand.status === "Analyzed" 
+                ? `<button class="btn btn-sm btn-success" onclick="shortlistCandidate('${cand.filename}', ${cand.skill_match_score}, this)">Shortlist</button>`
+                : `<span class="tag tag-missing">${cand.status}</span>`
+              }
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById("batch-result-container").style.display = "block";
+      } catch (err) {
+        alert("Error: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.querySelector(".btn-text").textContent = "Screen & Rank Candidates";
+      }
+    }
+
+    // 3. Shortlist Action
+    async function shortlistCandidate(filename, score, btn) {
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+
+      try {
+        const res = await fetch(`${API_BASE}/shortlist-candidate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filename: filename,
+            job_description: currentBatchJD || "General Role",
+            skill_match_score: score,
+            notes: "Shortlisted from Recruiter Dashboard"
+          })
+        });
+        if (!res.ok) throw new Error("Failed to shortlist");
+        btn.className = "btn btn-sm btn-secondary";
+        btn.textContent = "Shortlisted ✓";
+      } catch (err) {
+        alert("Error: " + err.message);
+        btn.disabled = false;
+        btn.textContent = "Shortlist";
+      }
+    }
+
+    // 4. Load Shortlisted Candidates
+    async function loadShortlisted() {
+      const tbody = document.getElementById("shortlist-tbody");
+      tbody.innerHTML = "<tr><td colspan='7'>Loading shortlisted candidates...</td></tr>";
+
+      try {
+        const res = await fetch(`${API_BASE}/shortlisted-candidates`);
+        const data = await res.json();
+        tbody.innerHTML = "";
+
+        if (!data.candidates.length) {
+          tbody.innerHTML = "<tr><td colspan='7'>No candidates shortlisted yet.</td></tr>";
+          return;
+        }
+
+        data.candidates.forEach(c => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${c.id}</td>
+            <td><strong>${c.filename}</strong></td>
+            <td>${c.job_description.substring(0, 50)}...</td>
+            <td>${c.skill_match_score !== null ? c.skill_match_score + "%" : "N/A"}</td>
+            <td><span class="tag tag-matched">${c.status}</span></td>
+            <td>${c.notes || "-"}</td>
+            <td>${c.shortlisted_at}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan='7'>Error loading: ${err.message}</td></tr>`;
+      }
+    }
+  </script>
+</body>
+</html>
