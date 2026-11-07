@@ -12,3 +12,5 @@ resumes/*
 *.sqlite
 *.sqlite3
 *.pptx
+
+generate_presentation.py
