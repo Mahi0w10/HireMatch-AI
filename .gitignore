@@ -11,3 +11,4 @@ resumes/*
 *.db
 *.sqlite
 *.sqlite3
+*.pptx
