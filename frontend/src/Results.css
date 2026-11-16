@@ -1,0 +1,283 @@
+
+.results-page {
+  min-height: 100vh;
+  background: #f8f7fc;
+  color: #211d35;
+  font-family: 'DM Sans', sans-serif;
+  padding-bottom: 60px;
+}
+
+.results-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 8%;
+  background: #ffffff;
+  border-bottom: 1px solid #eeebf5;
+}
+
+.results-brand {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #211d35;
+  text-decoration: none;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.results-brand-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-right: 8px;
+  border-radius: 11px;
+  background: #7357e8;
+  color: white;
+}
+
+.results-brand-ai {
+  color: #7357e8;
+}
+
+.back-button {
+  color: #625b77;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.results-main {
+  width: min(900px, 88%);
+  margin: 54px auto 0;
+}
+
+.results-heading {
+  margin-bottom: 28px;
+}
+
+.results-eyebrow {
+  color: #7357e8;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.results-heading h1 {
+  margin: 10px 0;
+  font-size: clamp(30px, 5vw, 42px);
+  letter-spacing: -1.5px;
+}
+
+.results-heading > p,
+.score-details p,
+.skills-card > p {
+  color: #777188;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.score-card,
+.skills-card,
+.suggestions-card {
+  background: #ffffff;
+  border: 1px solid #eeebf5;
+  border-radius: 22px;
+  padding: 28px;
+  box-shadow: 0 8px 30px rgba(48, 34, 90, 0.04);
+}
+
+.score-card {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-bottom: 24px;
+}
+
+.score-circle {
+  flex-shrink: 0;
+  width: 150px;
+  height: 150px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(#7357e8 0% 85%, #eeeaf8 85% 100%);
+}
+
+.score-circle > div {
+  width: 122px;
+  height: 122px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: white;
+}
+
+.score-circle strong {
+  color: #7357e8;
+  font-size: 34px;
+}
+
+.score-circle span {
+  margin-top: 3px;
+  color: #777188;
+  font-size: 11px;
+}
+
+.score-badge {
+  display: inline-block;
+  padding: 7px 12px;
+  border-radius: 30px;
+  background: #e9f8ef;
+  color: #21834d;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.score-details h2 {
+  margin: 14px 0 6px;
+  font-size: 23px;
+}
+
+.score-details p {
+  margin-bottom: 0;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.skills-card h2,
+.suggestions-card h2 {
+  margin: 0 0 10px;
+  font-size: 19px;
+}
+
+.skills-card > p {
+  margin: 0 0 20px;
+}
+
+.skill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.skill-list span {
+  padding: 9px 12px;
+  border-radius: 9px;
+  background: #f0edff;
+  color: #6248c8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.missing-card .skill-list span {
+  background: #fff3e8;
+  color: #a85b1b;
+}
+
+.suggestions-card {
+  margin-bottom: 28px;
+}
+
+.suggestions-card h2 {
+  margin-top: 12px;
+  margin-bottom: 24px;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0edf5;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.suggestion-item > span {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: #f0edff;
+  color: #7357e8;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.suggestion-item p {
+  margin: 5px 0;
+  color: #625b77;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.results-home-button {
+  display: inline-block;
+  padding: 14px 22px;
+  border-radius: 12px;
+  background: #7357e8;
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background 0.2s ease;
+}
+
+.results-home-button:hover {
+  background: #6044d0;
+}
+
+.demo-note {
+  margin-top: 18px;
+  color: #8a8499;
+  font-size: 12px;
+}
+
+@media (max-width: 650px) {
+  .results-navbar {
+    padding: 18px 6%;
+  }
+
+  .results-brand {
+    font-size: 18px;
+  }
+
+  .results-main {
+    width: 90%;
+    margin-top: 35px;
+  }
+
+  .score-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+    padding: 22px;
+  }
+
+  .score-circle {
+    align-self: center;
+  }
+
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .skills-card,
+  .suggestions-card {
+    padding: 22px;
+  }
+}
