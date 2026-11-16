@@ -730,3 +730,28 @@ textarea:focus-visible {
     stroke-dashoffset: 93.997;
   }
 }
+
+/* RECRUITER SELECTED RESUMES */
+.candidate-preview {
+  margin-top: 20px;
+  padding: 18px 20px;
+  background: #ffffff;
+  border: 1px solid #e5e0ef;
+  border-radius: 12px;
+}
+
+.candidate-preview h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  color: #211d35;
+}
+
+.candidate-preview p {
+  margin: 8px 0;
+  padding: 10px 12px;
+  background: #f8f7fc;
+  border-radius: 8px;
+  color: #514967;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
