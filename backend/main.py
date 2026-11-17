@@ -32,21 +32,44 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Swagger UI OpenAPI 3.0.2 format fix for file upload control
+
+# Swagger UI file upload fix
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
+
     openapi_schema = get_openapi(
         title=app.title,
         version=app.version,
         description=app.description,
         routes=app.routes,
     )
+
     openapi_schema["openapi"] = "3.0.2"
+
+    # Convert uploaded files into Swagger-compatible binary fields
+    def fix_file_schema(schema):
+        if isinstance(schema, dict):
+            if schema.get("contentMediaType") == "application/octet-stream":
+                schema.pop("contentMediaType", None)
+                schema["format"] = "binary"
+
+            for value in schema.values():
+                if isinstance(value, (dict, list)):
+                    fix_file_schema(value)
+
+        elif isinstance(schema, list):
+            for item in schema:
+                fix_file_schema(item)
+
+    fix_file_schema(openapi_schema.get("components", {}).get("schemas", {}))
+
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
+
 app.openapi = custom_openapi
+
 
 
 # =====================================================
