@@ -1,7 +1,13 @@
 
 import "./Results.css";
 
-function Results({ onBack, resumeName, jobDescription }) {
+function Results({ onBack, resumeName, jobDescription, analysis }) {
+  const score = analysis?.skill_match_score ?? 0;
+  const semanticScore = analysis?.semantic_similarity_score;
+  const matchedSkills = analysis?.matched_skills ?? [];
+  const missingSkills = analysis?.missing_skills ?? [];
+  const suggestions = analysis?.suggestions ?? [];
+
   return (
     <div className="results-page">
 
@@ -31,9 +37,11 @@ function Results({ onBack, resumeName, jobDescription }) {
         {/* HEADING */}
         <div className="results-heading">
           <span className="results-eyebrow">
-            YOUR ANALYSIS · DEMO
+            YOUR ANALYSIS · AI POWERED
           </span>
+
           <h1>Your Match Results</h1>
+
           <p>
             Here is how your resume aligns with the job description.
           </p>
@@ -48,85 +56,122 @@ function Results({ onBack, resumeName, jobDescription }) {
         {/* JOB DESCRIPTION */}
         <section className="skills-card">
           <h2>💼 Job Description</h2>
+
           <p className="job-description-preview">
             {jobDescription || "No job description provided."}
           </p>
         </section>
 
-        {/* MATCH SCORE - DEMO */}
+        {/* ACTUAL MATCH SCORE */}
         <section className="score-card">
-          <div className="score-circle">
+
+          <div
+  className="score-circle"
+  style={{ "--score": score }}
+>
             <div>
-              <strong>85%</strong>
-              <span>Demo score</span>
+              <strong>{score}%</strong>
+              <span>Skill match</span>
             </div>
           </div>
 
           <div className="score-details">
+
             <span className="score-badge">
-              Sample result
+              Analysis completed
             </span>
-            <h2>You’re off to a great start!</h2>
+
+            <h2>
+              {score >= 75
+                ? "Great match!"
+                : score >= 50
+                ? "Good starting point!"
+                : "Room for improvement!"}
+            </h2>
+
             <p>
-              This is a sample match score. Actual resume
-              analysis will be performed after backend integration.
+              Your resume matches {score}% of the identified
+              required skills.
             </p>
+
+            {semanticScore !== undefined && (
+              <p>
+                Semantic similarity score: {semanticScore}/100
+              </p>
+            )}
+
           </div>
         </section>
 
         {/* SKILLS SECTION */}
         <div className="results-grid">
 
+          {/* MATCHING SKILLS */}
           <section className="skills-card">
+
             <h2>✓ Matching Skills</h2>
-            <p>Sample matching skills.</p>
+
+            <p>Skills found in your resume.</p>
+
             <div className="skill-list">
-              <span>Python</span>
-              <span>SQL</span>
-              <span>Excel</span>
-              <span>Data Analysis</span>
+              {matchedSkills.length > 0 ? (
+                matchedSkills.map((skill, index) => (
+                  <span key={index}>{skill}</span>
+                ))
+              ) : (
+                <p>No matching skills found.</p>
+              )}
             </div>
+
           </section>
 
+          {/* MISSING SKILLS */}
           <section className="skills-card missing-card">
+
             <h2>＋ Skills to Improve</h2>
-            <p>Sample skills to develop further.</p>
+
+            <p>Required skills not found in your resume.</p>
+
             <div className="skill-list">
-              <span>Power BI</span>
-              <span>Statistics</span>
-              <span>Tableau</span>
+              {missingSkills.length > 0 ? (
+                missingSkills.map((skill, index) => (
+                  <span key={index}>{skill}</span>
+                ))
+              ) : (
+                <p>No missing skills identified.</p>
+              )}
             </div>
+
           </section>
 
         </div>
 
         {/* SUGGESTIONS */}
         <section className="suggestions-card">
-          <span className="results-eyebrow">NEXT STEPS</span>
+
+          <span className="results-eyebrow">
+            NEXT STEPS
+          </span>
+
           <h2>Suggestions to improve your resume</h2>
 
-          <div className="suggestion-item">
-            <span>01</span>
-            <p>
-              Highlight relevant data analysis projects.
-            </p>
-          </div>
+          {suggestions.length > 0 ? (
+            suggestions.map((suggestion, index) => (
+              <div className="suggestion-item" key={index}>
+                <span>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
 
-          <div className="suggestion-item">
-            <span>02</span>
-            <p>
-              Include Python, SQL, and Excel skills where accurate.
-            </p>
-          </div>
+                <p>{suggestion}</p>
+              </div>
+            ))
+          ) : (
+            <p>No additional suggestions available.</p>
+          )}
 
-          <div className="suggestion-item">
-            <span>03</span>
-            <p>
-              Add measurable achievements to your projects.
-            </p>
-          </div>
         </section>
 
+        {/* BACK BUTTON */}
         <button
           className="results-home-button"
           type="button"
@@ -136,7 +181,7 @@ function Results({ onBack, resumeName, jobDescription }) {
         </button>
 
         <p className="demo-note">
-          Demo results only — actual AI analysis will be connected later.
+          Results generated using the HireMatch AI backend.
         </p>
 
       </main>

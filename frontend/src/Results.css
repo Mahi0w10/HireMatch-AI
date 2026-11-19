@@ -107,7 +107,9 @@
   margin-bottom: 24px;
 }
 
+/* DYNAMIC SCORE CIRCLE */
 .results-page .score-circle {
+  --score: 0;
   flex-shrink: 0;
   width: 150px;
   height: 150px;
@@ -115,8 +117,8 @@
   place-items: center;
   border-radius: 50%;
   background: conic-gradient(
-    #43885A 0% 85%,
-    #E5EEE3 85% 100%
+    #43885A calc(var(--score) * 1%),
+    #E5EEE3 0
   );
 }
 
@@ -181,16 +183,28 @@
 .results-page .skill-list {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
 }
 
 .results-page .skill-list span {
-  padding: 9px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 13px;
   border-radius: 9px;
   background: #DDF0DF;
   color: #20563B;
   font-size: 12px;
   font-weight: 700;
+  line-height: 1.5;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  transition: transform 0.2s ease;
+}
+
+.results-page .skill-list span:hover {
+  transform: translateY(-2px);
 }
 
 .results-page .missing-card .skill-list span {
@@ -263,6 +277,7 @@
   font-size: 12px;
 }
 
+/* RESPONSIVE DESIGN */
 @media (max-width: 650px) {
   .results-page .results-navbar {
     padding: 18px 6%;

@@ -1,4 +1,6 @@
-﻿import pathlib
+﻿
+import pathlib
+import traceback
 from typing import Annotated
 
 import pymupdf as fitz
@@ -10,12 +12,11 @@ from pydantic import BaseModel
 
 from ai.resume_analyzer import analyze_resume
 from ai.batch_analyzer import analyze_multiple_resumes
-from database.db import shortlist_candidate, get_shortlisted_candidates, save_analysis
-
-
-# =====================================================
-# 1. APPLICATION CONFIGURATION & OPENAPI FIX
-# =====================================================
+from database.db import (
+    shortlist_candidate,
+    get_shortlisted_candidates,
+    save_analysis
+)
 
 app = fastapi.FastAPI(
     title="HireMatch AI",
@@ -23,7 +24,6 @@ app = fastapi.FastAPI(
     version="1.3.0"
 )
 
-# CORS middleware for seamless frontend connection
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -33,7 +33,6 @@ app.add_middleware(
 )
 
 
-# Swagger UI file upload fix
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
@@ -47,7 +46,6 @@ def custom_openapi():
 
     openapi_schema["openapi"] = "3.0.2"
 
-    # Convert uploaded files into Swagger-compatible binary fields
     def fix_file_schema(schema):
         if isinstance(schema, dict):
             if schema.get("contentMediaType") == "application/octet-stream":
@@ -70,25 +68,14 @@ def custom_openapi():
 
 app.openapi = custom_openapi
 
-
-
-# =====================================================
-# 2. RESUME STORAGE & STATIC FRONTEND DIRECTORY
-# =====================================================
-
 RESUME_DIR = pathlib.Path("resumes")
 RESUME_DIR.mkdir(parents=True, exist_ok=True)
 
 FRONTEND_DIR = pathlib.Path("frontend")
 FRONTEND_DIR.mkdir(parents=True, exist_ok=True)
 
-# Mount frontend directory for browser UI access at /ui
 app.mount("/ui", StaticFiles(directory="frontend", html=True), name="frontend")
 
-
-# =====================================================
-# 3. PYDANTIC MODELS
-# =====================================================
 
 class ShortlistRequest(BaseModel):
     filename: str
@@ -96,10 +83,6 @@ class ShortlistRequest(BaseModel):
     skill_match_score: float | None = None
     notes: str = ""
 
-
-# =====================================================
-# 4. HOME & HEALTH ENDPOINTS
-# =====================================================
 
 @app.get("/")
 def home():
@@ -112,14 +95,8 @@ def home():
 
 @app.get("/health")
 def health_check():
-    return {
-        "status": "healthy"
-    }
+    return {"status": "healthy"}
 
-
-# =====================================================
-# 5. PDF VALIDATION & EXTRACTION HELPERS
-# =====================================================
 
 async def read_resume_pdf(file: fastapi.UploadFile) -> bytes:
     if not file.filename or pathlib.Path(file.filename).suffix.lower() != ".pdf":
@@ -145,6 +122,7 @@ def extract_text_from_pdf(content: bytes) -> str:
             extracted_text = "\n".join(
                 page.get_text() for page in pdf
             ).strip()
+
     except Exception:
         raise fastapi.HTTPException(
             status_code=400,
@@ -159,10 +137,6 @@ def extract_text_from_pdf(content: bytes) -> str:
 
     return extracted_text
 
-
-# =====================================================
-# 6. UPLOAD & EXTRACT ENDPOINTS
-# =====================================================
 
 @app.post("/upload-resume")
 async def upload_resume(
@@ -208,10 +182,6 @@ async def extract_resume_text(
     }
 
 
-# =====================================================
-# 7. ANALYZE SINGLE RESUME
-# =====================================================
-
 @app.post("/analyze-resume")
 async def analyze_resume_api(
     file: Annotated[
@@ -235,7 +205,7 @@ async def analyze_resume_api(
 
     try:
         result = analyze_resume(resume_text, job_description)
-        # Save analysis record to database
+
         save_analysis(
             filename=filename,
             job_description=job_description,
@@ -244,12 +214,17 @@ async def analyze_resume_api(
             matched_skills=result["matched_skills"],
             missing_skills=result["missing_skills"]
         )
+
     except ValueError as error:
         raise fastapi.HTTPException(status_code=400, detail=str(error))
-    except Exception:
+
+    except Exception as error:
+        print("\n===== RESUME ANALYSIS ERROR =====")
+        traceback.print_exc()
+
         raise fastapi.HTTPException(
             status_code=500,
-            detail="Resume analysis failed. Please try again."
+            detail=str(error)
         )
 
     return {
@@ -258,10 +233,6 @@ async def analyze_resume_api(
         "analysis": result
     }
 
-
-# =====================================================
-# 8. ANALYZE MULTIPLE RESUMES (BATCH SCREENING)
-# =====================================================
 
 @app.post("/analyze-multiple-resumes")
 async def analyze_multiple_resumes_api(
@@ -297,19 +268,23 @@ async def analyze_multiple_resumes_api(
 
     for file in files:
         filename = pathlib.Path(file.filename).name if file.filename else "Unknown"
+
         try:
             content = await read_resume_pdf(file)
             resume_text = extract_text_from_pdf(content)
+
             candidates.append({
                 "filename": filename,
                 "text": resume_text
             })
+
         except fastapi.HTTPException as error:
             invalid_files.append({
                 "filename": filename,
                 "status": "Failed",
                 "error": error.detail
             })
+
         finally:
             await file.close()
 
@@ -324,7 +299,7 @@ async def analyze_multiple_resumes_api(
 
     try:
         results = analyze_multiple_resumes(job_description, candidates)
-        # Save batch evaluation to database
+
         for cand in results:
             if cand["status"] == "Analyzed":
                 save_analysis(
@@ -336,12 +311,17 @@ async def analyze_multiple_resumes_api(
                     missing_skills=cand["missing_skills"],
                     rank=cand.get("rank")
                 )
+
     except ValueError as error:
         raise fastapi.HTTPException(status_code=400, detail=str(error))
-    except Exception:
+
+    except Exception as error:
+        print("\n===== MULTIPLE RESUME ANALYSIS ERROR =====")
+        traceback.print_exc()
+
         raise fastapi.HTTPException(
             status_code=500,
-            detail="Multiple resume analysis failed. Please try again."
+            detail=str(error)
         )
 
     return {
@@ -354,19 +334,15 @@ async def analyze_multiple_resumes_api(
     }
 
 
-# =====================================================
-# 9. SHORTLIST ENDPOINTS (PERSISTENCE)
-# =====================================================
-
 @app.post("/shortlist-candidate")
 def shortlist_candidate_api(request: ShortlistRequest):
-    """Shortlists a candidate and saves them persistently in SQLite database."""
     record_id = shortlist_candidate(
         filename=request.filename,
         job_description=request.job_description,
         skill_match_score=request.skill_match_score,
         notes=request.notes
     )
+
     return {
         "message": f"Candidate '{request.filename}' shortlisted successfully!",
         "id": record_id,
@@ -376,8 +352,8 @@ def shortlist_candidate_api(request: ShortlistRequest):
 
 @app.get("/shortlisted-candidates")
 def get_shortlisted_candidates_api():
-    """Retrieves all shortlisted candidates from SQLite database."""
     candidates = get_shortlisted_candidates()
+
     return {
         "total_shortlisted": len(candidates),
         "candidates": candidates
