@@ -2,6 +2,40 @@
 import sqlite3
 from database.connection import get_connection
 
+def init_db():
+    """Initialize the database and create required tables."""
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS analysis_results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            filename TEXT NOT NULL,
+            job_description TEXT NOT NULL,
+            skill_match_score REAL,
+            semantic_similarity_score INTEGER NOT NULL,
+            matched_skills TEXT NOT NULL,
+            missing_skills TEXT NOT NULL,
+            rank INTEGER,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS shortlists (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            filename TEXT NOT NULL,
+            job_description TEXT NOT NULL,
+            skill_match_score REAL,
+            status TEXT DEFAULT 'Shortlisted',
+            notes TEXT,
+            shortlisted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
 
 def shortlist_candidate(
     filename,
@@ -145,3 +179,6 @@ def save_analysis(
 
     finally:
         conn.close()
+
+# Auto-initialize database tables on import
+init_db()
