@@ -1,16 +1,26 @@
-# React + Vite
+# HireMatch AI — AI-Based Resume Screening & Job Matching System
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+[![Python](https://img.shields.io/badge/Python-3.12-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.142-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React-18.x-61DAFB.svg?logo=react&logoColor=black)](https://react.dev/)
+[![Sentence--Transformers](https://img.shields.io/badge/Sentence--Transformers-all--MiniLM--L6--v2-orange.svg)](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
+[![SQLite](https://img.shields.io/badge/SQLite-3-003B57.svg?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
 
-Currently, two official plugins are available:
+An explainable, dual-metric AI platform designed to automate resume screening, evaluate candidate-job alignment, rank multi-applicant batches with tie-breaking logic, and provide actionable skill-gap diagnostics.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 📌 Project Overview
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+In technical recruitment, HR teams face severe cognitive fatigue processing hundreds of resumes for single vacancies. Traditional ATS keyword search engines trigger high false-negative rates due to strict syntactic mismatch, while opaque black-box neural networks lack explainability.
 
-## Expanding the Oxlint configuration
+**HireMatch AI** bridges this divide by delivering a transparent human-in-the-loop decision-support system:
+1. **Candidate Self-Assessment:** Analyzes single resume PDFs against job descriptions, outputting explicit Skill Match (%) compliance, dense contextual Semantic Similarity (/100), and personalized skill-gap learning suggestions.
+2. **Recruiter Batch Leaderboard:** Screens batches of up to 20 resumes simultaneously, generating an interactive ranked leaderboard with automated hierarchical tie-breaking.
+3. **Persistent Shortlisting:** One-click recruiter shortlisting backed by an ACID-compliant SQLite transactional database.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+---
+
+## 🏗️ System Architecture
+
+HireMatch AI follows a decoupled, **Three-Tier Function-Oriented Architecture**:
